@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>إضافة شواهد</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="form-panel no-print">
+      <h1>إضافة شواهد</h1>
+      <p class="intro">عبّئ البيانات وارفع حتى 4 صور، ثم اعرض الشاهد بصيغة تقرير جاهز للطباعة أو الحفظ PDF.</p>
+
+      <form id="evidenceForm">
+        <div class="form-grid">
+          <label>
+            <span>اسم المدرسة</span>
+            <input id="school" type="text" value="مدرسة عامر بن عوف" required>
+          </label>
+
+          <label>
+            <span>التاريخ</span>
+            <input id="date" type="date" required>
+          </label>
+
+          <label>
+            <span>البرنامج</span>
+            <input id="program" type="text" value="برنامج التوحد" required>
+          </label>
+
+          <label>
+            <span>عنوان الشاهد</span>
+            <input id="title" type="text" placeholder="مثال: نشاط تنمية التواصل" required>
+          </label>
+
+          <label>
+            <span>اسم المعلم / المنفذ</span>
+            <input id="teacher" type="text" placeholder="اسم المعلم" required>
+          </label>
+
+          <label>
+            <span>الفئة المستهدفة</span>
+            <input id="target" type="text" placeholder="مثال: طلاب الصف" required>
+          </label>
+
+          <label>
+            <span>مكان التنفيذ</span>
+            <input id="location" type="text" placeholder="مثال: الفصول الدراسية">
+          </label>
+
+          <label>
+            <span>عدد المستفيدين</span>
+            <input id="count" type="text" placeholder="مثال: 8 طلاب">
+          </label>
+
+          <label class="full">
+            <span>الأهداف</span>
+            <textarea id="goals" rows="7" placeholder="اكتب كل هدف في سطر مستقل" required></textarea>
+          </label>
+
+          <div class="full">
+            <div class="upload-title">
+              <span>صور الشواهد</span>
+              <small>4 صور كحد أقصى</small>
+            </div>
+            <label class="upload-box" for="photos">
+              <strong>＋ اختر الصور</strong>
+              <span>JPG / PNG</span>
+            </label>
+            <input id="photos" type="file" accept="image/*" multiple hidden>
+            <p id="uploadMsg" class="upload-msg"></p>
+            <div id="thumbs" class="thumbs"></div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="primary" type="submit">إنشاء الشاهد</button>
+          <button class="secondary" type="reset">مسح</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="previewWrap" class="preview-wrap hidden">
+      <div class="preview-actions no-print">
+        <button id="editBtn" class="secondary" type="button">العودة للتعديل</button>
+        <button id="imageBtn" class="secondary" type="button">تحميل صورة</button>
+        <button id="pdfBtn" class="primary" type="button">تحميل PDF</button>
+        <button id="printBtn" class="secondary" type="button">طباعة</button>
+      </div>
+
+      <article id="report" class="report">
+        <div class="top-banner">
+          <div class="ministry-logo-wrap">
+            <img class="moe-logo" src="moe-logo-clean.png" alt="شعار وزارة التعليم">
+          </div>
+          <div class="education-office">
+            <strong>الإدارة العامة للتعليم بمنطقة الرياض</strong>
+            <span>منطقة الرياض</span>
+          </div>
+        </div>
+
+        <div class="school-ribbon">
+          <span id="rSchool">مدرسة عامر بن عوف</span>
+        </div>
+
+        <div class="program-ribbon">
+          <span>برنامج التوحد</span>
+          <small id="rTitle"></small>
+        </div>
+
+        <div class="details-grid">
+          <div class="info-card">
+            <span class="floating-label">المنفذ:</span>
+            <strong id="rTeacher"></strong>
+          </div>
+          <div class="info-card">
+            <span class="floating-label">مكان التنفيذ:</span>
+            <strong id="rLocation"></strong>
+          </div>
+
+          <div class="side-stack">
+            <div class="info-card">
+              <span class="floating-label">المستهدفون:</span>
+              <strong id="rTarget"></strong>
+            </div>
+            <div class="info-card">
+              <span class="floating-label">عدد المستفيدين:</span>
+              <strong id="rCount"></strong>
+            </div>
+            <div class="info-card">
+              <span class="floating-label">تاريخ التنفيذ:</span>
+              <strong id="rDate"></strong>
+            </div>
+          </div>
+
+          <div class="goals-card">
+            <span class="floating-label">الأهداف:</span>
+            <ol id="rGoals"></ol>
+          </div>
+        </div>
+
+        <div class="evidence-box">
+          <div class="evidence-title">الشواهد</div>
+          <div id="rPhotos" class="photos-grid"></div>
+        </div>
+
+        <div class="footer-bars">
+          <div></div><div></div>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
