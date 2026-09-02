@@ -1,94 +1,23 @@
-const form=document.getElementById('evidenceForm');
-const photosInput=document.getElementById('photos');
-const thumbs=document.getElementById('thumbs');
-const photosBanner=document.getElementById('photosBanner');
-const photosCount=document.getElementById('photosCount');
-const uploadMsg=document.getElementById('uploadMsg');
-const previewWrap=document.getElementById('previewWrap');
-const report=document.getElementById('report');
-const reportStage=document.getElementById('reportStage');
-let selectedFiles=[];
-let previewUrls=[];
-let reportUrls=[];
-
-function updateReportScale(){
-  if(previewWrap.classList.contains('hidden'))return;
-  const naturalWidth=794,naturalHeight=1123;
-  const available=Math.max(280,reportStage.clientWidth);
-  const scale=Math.min(1,available/naturalWidth);
-  report.style.transform=`scale(${scale})`;
-  reportStage.style.height=`${naturalHeight*scale}px`;
-}
-window.addEventListener('resize',updateReportScale);
-
-function revoke(urls){urls.forEach(u=>URL.revokeObjectURL(u));urls.length=0}
-function renderThumbs(){
-  revoke(previewUrls);thumbs.innerHTML='';
-  photosBanner.classList.toggle('empty',selectedFiles.length===0);
-  photosCount.textContent=selectedFiles.length?`${selectedFiles.length} من 4 صور`:'لم يتم اختيار صور';
-  selectedFiles.forEach((file,index)=>{
-    const box=document.createElement('div');box.className='thumb';
-    const img=document.createElement('img');const url=URL.createObjectURL(file);previewUrls.push(url);img.src=url;img.alt=`صورة شاهد ${index+1}`;
-    const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.setAttribute('aria-label','حذف الصورة');
-    remove.addEventListener('click',()=>{selectedFiles.splice(index,1);renderThumbs()});
-    box.append(img,remove);thumbs.appendChild(box);
-  });
-}
-photosInput.addEventListener('change',()=>{
-  const incoming=Array.from(photosInput.files||[]).filter(f=>f.type.startsWith('image/'));
-  const combined=[...selectedFiles,...incoming];uploadMsg.textContent='';
-  if(combined.length>4){selectedFiles=combined.slice(0,4);uploadMsg.textContent='يمكن رفع 4 صور فقط. تم الاحتفاظ بأول 4 صور.'}else selectedFiles=combined;
-  photosInput.value='';renderThumbs();
-});
-form.addEventListener('reset',()=>{selectedFiles=[];setTimeout(()=>{renderThumbs();uploadMsg.textContent='';previewWrap.classList.add('hidden')},0)});
-
-function formatDate(value){
-  if(!value)return'';
-  const[y,m,d]=value.split('-').map(Number);
-  return `${y}/${m}/${d}`;
-}
-
-form.addEventListener('submit',e=>{
-  e.preventDefault();
-  document.getElementById('rSchool').textContent=document.getElementById('school').value.trim();
-  document.getElementById('rProgram').textContent=document.getElementById('program').value.trim();
-  document.getElementById('rTeacher').textContent=document.getElementById('teacher').value.trim();
-  document.getElementById('rTarget').textContent=document.getElementById('target').value.trim();
-  document.getElementById('rLocation').textContent=document.getElementById('location').value.trim();
-  document.getElementById('rCount').textContent=document.getElementById('count').value.trim();
-  document.getElementById('rDate').textContent=formatDate(document.getElementById('date').value);
-
-  const goals=document.getElementById('goals').value.split(/\n+/).map(x=>x.trim()).filter(Boolean);
-  const goalsBox=document.getElementById('rGoals');goalsBox.innerHTML='';
-  goals.slice(0,6).forEach(g=>{const li=document.createElement('li');li.textContent=g;goalsBox.appendChild(li)});
-
-  revoke(reportUrls);
-  const photosBox=document.getElementById('rPhotos');photosBox.innerHTML='';
-  selectedFiles.forEach((file,index)=>{const img=document.createElement('img');const url=URL.createObjectURL(file);reportUrls.push(url);img.src=url;img.alt=`الشاهد المصور ${index+1}`;photosBox.appendChild(img)});
-  for(let i=selectedFiles.length;i<4;i++){const p=document.createElement('div');p.className='photo-placeholder';p.textContent='صورة شاهد';photosBox.appendChild(p)}
-
-  previewWrap.classList.remove('hidden');
-  requestAnimationFrame(()=>{updateReportScale();previewWrap.scrollIntoView({behavior:'smooth',block:'start'})});
-});
-
-document.getElementById('editBtn').addEventListener('click',()=>{previewWrap.classList.add('hidden');form.scrollIntoView({behavior:'smooth',block:'start'})});
-document.getElementById('printBtn').addEventListener('click',()=>window.print());
-
-async function ensureExportLibs(){
-  if(!window.html2canvas)await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';s.onload=resolve;s.onerror=reject;document.head.appendChild(s)});
-  if(!window.jspdf)await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';s.onload=resolve;s.onerror=reject;document.head.appendChild(s)});
-}
-async function renderReportCanvas(scale=3){
-  await ensureExportLibs();document.body.classList.add('exporting');
-  const oldTransform=report.style.transform,oldHeight=reportStage.style.height;
-  report.style.transform='none';reportStage.style.height='1123px';
-  try{
-    await Promise.all(Array.from(report.querySelectorAll('img')).map(img=>img.complete?Promise.resolve():new Promise(r=>{img.onload=img.onerror=r})));
-    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-    return await html2canvas(report,{scale,useCORS:true,backgroundColor:'#fff',logging:false,width:794,height:1123,windowWidth:1200,windowHeight:1400});
-  }finally{report.style.transform=oldTransform;reportStage.style.height=oldHeight;document.body.classList.remove('exporting')}
-}
-function downloadDataUrl(dataUrl,filename){const a=document.createElement('a');a.download=filename;a.href=dataUrl;document.body.appendChild(a);a.click();a.remove()}
-document.getElementById('imageBtn').addEventListener('click',async()=>{try{const canvas=await renderReportCanvas(3);downloadDataUrl(canvas.toDataURL('image/png'),'الشاهد-جودة-عالية.png')}catch(e){alert('تعذر إنشاء الصورة. تأكد من اتصال الإنترنت ثم حاول مرة أخرى.')}});
-document.getElementById('pdfBtn').addEventListener('click',async()=>{try{const canvas=await renderReportCanvas(3);const{jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4',compress:true});pdf.addImage(canvas.toDataURL('image/jpeg',0.98),'JPEG',0,0,210,297,undefined,'FAST');pdf.save('الشاهد.pdf')}catch(e){alert('تعذر إنشاء PDF. تأكد من اتصال الإنترنت ثم حاول مرة أخرى.')}});
-renderThumbs();
+const SUPABASE_URL='https://ousymngnwyrgjeymaxng.supabase.co';
+const SUPABASE_KEY='sb_publishable_mBNZmgLSEGinrksTendq9Q_IyKpsrCi';
+const BUCKET='reports';
+const form=document.getElementById('evidenceForm'),photosInput=document.getElementById('photos'),thumbs=document.getElementById('thumbs'),photosBanner=document.getElementById('photosBanner'),photosCount=document.getElementById('photosCount'),uploadMsg=document.getElementById('uploadMsg'),previewWrap=document.getElementById('previewWrap'),report=document.getElementById('report'),reportStage=document.getElementById('reportStage');
+const sharePanel=document.getElementById('sharePanel'),pdfLink=document.getElementById('pdfLink');
+let selectedFiles=[],previewUrls=[],reportUrls=[],currentPdfUrl='';
+function updateReportScale(){if(previewWrap.classList.contains('hidden'))return;const w=794,h=1123,a=Math.max(280,reportStage.clientWidth),s=Math.min(1,a/w);report.style.transform=`scale(${s})`;reportStage.style.height=`${h*s}px`}
+window.addEventListener('resize',updateReportScale);function revoke(a){a.forEach(u=>URL.revokeObjectURL(u));a.length=0}
+function renderThumbs(){revoke(previewUrls);thumbs.innerHTML='';photosBanner.classList.toggle('empty',!selectedFiles.length);photosCount.textContent=selectedFiles.length?`${selectedFiles.length} من 4 صور`:'لم يتم اختيار صور';selectedFiles.forEach((file,index)=>{const box=document.createElement('div');box.className='thumb';const img=document.createElement('img'),url=URL.createObjectURL(file);previewUrls.push(url);img.src=url;img.alt=`صورة شاهد ${index+1}`;const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.addEventListener('click',()=>{selectedFiles.splice(index,1);renderThumbs()});box.append(img,remove);thumbs.appendChild(box)})}
+photosInput.addEventListener('change',()=>{const incoming=Array.from(photosInput.files||[]).filter(f=>f.type.startsWith('image/')),combined=[...selectedFiles,...incoming];uploadMsg.textContent='';if(combined.length>4){selectedFiles=combined.slice(0,4);uploadMsg.textContent='يمكن رفع 4 صور فقط. تم الاحتفاظ بأول 4 صور.'}else selectedFiles=combined;photosInput.value='';renderThumbs()});
+form.addEventListener('reset',()=>{selectedFiles=[];currentPdfUrl='';setTimeout(()=>{renderThumbs();uploadMsg.textContent='';previewWrap.classList.add('hidden');sharePanel.classList.add('hidden')},0)});
+function formatDate(v){if(!v)return'';const[y,m,d]=v.split('-').map(Number);return`${y}/${m}/${d}`}
+form.addEventListener('submit',e=>{e.preventDefault();currentPdfUrl='';sharePanel.classList.add('hidden');document.getElementById('rSchool').textContent=document.getElementById('school').value.trim();document.getElementById('rProgram').textContent=document.getElementById('program').value.trim();document.getElementById('rTeacher').textContent=document.getElementById('teacher').value.trim();document.getElementById('rTarget').textContent=document.getElementById('target').value.trim();document.getElementById('rLocation').textContent=document.getElementById('location').value.trim();document.getElementById('rCount').textContent=document.getElementById('count').value.trim();document.getElementById('rDate').textContent=formatDate(document.getElementById('date').value);const goals=document.getElementById('goals').value.split(/\n+/).map(x=>x.trim()).filter(Boolean),gb=document.getElementById('rGoals');gb.innerHTML='';goals.slice(0,6).forEach(g=>{const li=document.createElement('li');li.textContent=g;gb.appendChild(li)});revoke(reportUrls);const pb=document.getElementById('rPhotos');pb.innerHTML='';selectedFiles.forEach((file,index)=>{const img=document.createElement('img'),url=URL.createObjectURL(file);reportUrls.push(url);img.src=url;img.alt=`الشاهد المصور ${index+1}`;pb.appendChild(img)});for(let i=selectedFiles.length;i<4;i++){const p=document.createElement('div');p.className='photo-placeholder';p.textContent='صورة شاهد';pb.appendChild(p)}previewWrap.classList.remove('hidden');requestAnimationFrame(()=>{updateReportScale();previewWrap.scrollIntoView({behavior:'smooth',block:'start'})})});
+document.getElementById('editBtn').addEventListener('click',()=>{previewWrap.classList.add('hidden');form.scrollIntoView({behavior:'smooth',block:'start'})});document.getElementById('printBtn').addEventListener('click',()=>window.print());
+async function ensureExportLibs(){if(!window.html2canvas)await new Promise((r,j)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';s.onload=r;s.onerror=j;document.head.appendChild(s)});if(!window.jspdf)await new Promise((r,j)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';s.onload=r;s.onerror=j;document.head.appendChild(s)})}
+async function renderReportCanvas(scale=3){await ensureExportLibs();document.body.classList.add('exporting');const ot=report.style.transform,oh=reportStage.style.height;report.style.transform='none';reportStage.style.height='1123px';try{await Promise.all(Array.from(report.querySelectorAll('img')).map(img=>img.complete?Promise.resolve():new Promise(r=>{img.onload=img.onerror=r})));await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));return await html2canvas(report,{scale,useCORS:true,backgroundColor:'#fff',logging:false,width:794,height:1123,windowWidth:1200,windowHeight:1400})}finally{report.style.transform=ot;reportStage.style.height=oh;document.body.classList.remove('exporting')}}
+function downloadDataUrl(dataUrl,name){const a=document.createElement('a');a.download=name;a.href=dataUrl;document.body.appendChild(a);a.click();a.remove()}
+document.getElementById('imageBtn').addEventListener('click',async()=>{try{const c=await renderReportCanvas(3);downloadDataUrl(c.toDataURL('image/png'),'الشاهد.png')}catch(e){alert('تعذر إنشاء الصورة. تأكد من اتصال الإنترنت ثم حاول مرة أخرى.')}});
+async function makePdfBlob(){const canvas=await renderReportCanvas(3),{jsPDF}=window.jspdf,pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4',compress:true});pdf.addImage(canvas.toDataURL('image/jpeg',.98),'JPEG',0,0,210,297,undefined,'FAST');return pdf.output('blob')}
+async function uploadPdf(blob){const id=(crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`),path=`${id}.pdf`,res=await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/pdf','x-upsert':'false'},body:blob});if(!res.ok)throw new Error(await res.text());return`${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`}
+document.getElementById('pdfBtn').addEventListener('click',async e=>{const b=e.currentTarget,old=b.textContent;try{b.disabled=true;b.textContent='جاري إنشاء الرابط...';const blob=await makePdfBlob();currentPdfUrl=await uploadPdf(blob);pdfLink.value=currentPdfUrl;sharePanel.classList.remove('hidden');sharePanel.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(err){console.error(err);alert('تعذر رفع PDF. تأكد من إعداد سياسة INSERT في Supabase ثم حاول مرة أخرى.')}finally{b.disabled=false;b.textContent=old}});
+document.getElementById('copyLinkBtn').addEventListener('click',async()=>{if(!currentPdfUrl)return;try{await navigator.clipboard.writeText(currentPdfUrl);alert('تم نسخ رابط PDF')}catch(e){pdfLink.select();document.execCommand('copy');alert('تم نسخ رابط PDF')}});
+document.getElementById('shareBtn').addEventListener('click',async()=>{if(!currentPdfUrl)return;const data={title:'الشاهد',text:'رابط الشاهد PDF',url:currentPdfUrl};if(navigator.share){try{await navigator.share(data)}catch(e){if(e.name!=='AbortError')window.open(`https://wa.me/?text=${encodeURIComponent('رابط الشاهد PDF\n'+currentPdfUrl)}`,'_blank')}}else window.open(`https://wa.me/?text=${encodeURIComponent('رابط الشاهد PDF\n'+currentPdfUrl)}`,'_blank')});renderThumbs();
