@@ -1,65 +1,16 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#183f55">
-  <title>إضافة شواهد</title>
-  <link rel="stylesheet" href="style.css?v=20260902-2225">
-</head>
-<body>
-  <main class="shell">
-    <section class="form-panel no-print">
-      <h1>إضافة شواهد</h1>
-      <p class="intro">عبّئ البيانات وارفع حتى 4 صور، ثم أنشئ تقريرًا مطابقًا للقالب المدرسي في صفحة A4 واحدة.</p>
-      <form id="evidenceForm">
-        <div class="form-grid">
-          <label><span>اسم المدرسة</span><input id="school" type="text" value="مدرسة عامر بن عوف الإبتدائية" required></label>
-          <label><span>التاريخ</span><input id="date" type="date" required></label>
-          <label><span>البرنامج</span><input id="program" type="text" value="برنامج التوحد بإبتدائية عامر بن عوف" required></label>
-          <label><span>عنوان الشاهد</span><input id="title" type="text" placeholder="اختياري"></label>
-          <label><span>اسم المعلم / المنفذ</span><input id="teacher" type="text" placeholder="اسم المعلم" required></label>
-          <label><span>الفئة المستهدفة</span><input id="target" type="text" placeholder="مثال: طلاب الفصل" required></label>
-          <label><span>مكان التنفيذ</span><input id="location" type="text" placeholder="مثال: الساحة الداخلية" required></label>
-          <label><span>عدد المستفيدين</span><input id="count" type="text" placeholder="مثال: 3 طلاب" required></label>
-          <label class="full"><span>الأهداف</span><textarea id="goals" rows="5" placeholder="اكتب كل هدف في سطر مستقل" required></textarea></label>
-          <div class="full photos-upload-section">
-            <div class="upload-title"><span>صور الشواهد</span><small>4 صور كحد أقصى</small></div>
-            <label class="upload-box" for="photos"><strong>＋ اختر الصور</strong><span>ستظهر معاينتها مباشرة هنا</span></label>
-            <input id="photos" type="file" accept="image/*" multiple hidden>
-            <p id="uploadMsg" class="upload-msg"></p>
-            <div id="photosBanner" class="photos-banner empty" aria-live="polite">
-              <div class="photos-banner-head"><strong>معاينة الصور المختارة</strong><span id="photosCount">لم يتم اختيار صور</span></div>
-              <div id="thumbs" class="thumbs"></div><div class="empty-photos">ستظهر الصور هنا فور اختيارها</div>
-            </div>
-          </div>
-        </div>
-        <div class="form-actions"><button id="createBtn" class="primary" type="submit">إنشاء الشاهد</button><button class="secondary" type="reset">مسح</button></div>
-      </form>
-    </section>
-    <section id="previewWrap" class="preview-wrap hidden">
-      <div id="prepareStatus" class="share-panel no-print"><strong>جاري تجهيز ملف PDF والرابط...</strong></div>
-      <div id="readyActions" class="preview-actions no-print hidden">
-        <button id="editBtn" class="secondary" type="button">العودة للتعديل</button>
-        <button id="imageBtn" class="secondary" type="button">تحميل صورة</button>
-        <button id="printBtn" class="secondary" type="button">طباعة</button>
-        <button id="shareBtn" class="primary" type="button">مشاركة PDF</button>
-        <button id="copyLinkBtn" class="secondary" type="button">نسخ الرابط</button>
-      </div>
-      <div id="sharePanel" class="share-panel no-print hidden">
-        <strong>تم تجهيز الشاهد</strong>
-        <input id="pdfLink" type="text" readonly dir="ltr" aria-label="رابط PDF">
-      </div>
-      <div id="reportStage" class="report-stage"><article id="report" class="report">
-        <header class="top-banner"><div class="education-office"><strong>الإدارة العامة للتعليم</strong><strong>بمنطقة الرياض</strong></div><div class="header-separator"></div><div class="ministry-logo-wrap"><img class="moe-logo" src="moe-logo-clean.png" alt="وزارة التعليم"></div></header>
-        <div class="school-ribbon"><span id="rSchool">مدرسة عامر بن عوف الإبتدائية</span></div>
-        <div class="program-ribbon"><span id="rProgram">برنامج التوحد بإبتدائية عامر بن عوف</span></div>
-        <section class="report-data"><div class="left-column"><div class="report-card location-card"><span class="card-label">مكان التنفيذ:</span><strong id="rLocation"></strong></div><div class="report-card goals-card"><span class="card-label">الأهداف:</span><div class="goals-content"><div id="rGoals" class="goals-list"></div></div></div></div><div class="right-column"><div class="report-card"><span class="card-label">المنفذ:</span><strong id="rTeacher"></strong></div><div class="report-card"><span class="card-label">المستهدفون:</span><strong id="rTarget"></strong></div><div class="report-card"><span class="card-label">عدد المستفيدين:</span><strong id="rCount"></strong></div><div class="report-card"><span class="card-label">تاريخ التنفيذ:</span><strong id="rDate"></strong></div></div></section>
-        <section class="evidence-box"><div class="section-label">الشواهد</div><div id="rPhotos" class="photos-grid"></div></section>
-        <footer class="footer-bars"><div></div><div></div></footer>
-      </article></div>
-    </section>
-  </main>
-  <script src="script.js?v=20260902-2229"></script>
-</body>
-</html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#16897d"><title>إضافة شواهد</title><link rel="stylesheet" href="style.css?v=20260916-1"></head><body><main class="shell">
+<section class="form-panel no-print"><h1>إضافة شواهد</h1><p class="intro">عبّئ بيانات البرنامج وارفع حتى 4 صور، ثم أنشئ التقرير في صفحة A4 واحدة.</p><form id="evidenceForm"><div class="form-grid">
+<label><span>اسم البرنامج</span><input id="program" type="text" required></label><label><span>نوع البرنامج</span><input id="programType" type="text" required></label><label><span>الجهة المنفذة</span><textarea id="entity" rows="3" required></textarea></label><label><span>المستهدفون</span><textarea id="target" rows="3" required></textarea></label><label><span>تاريخ التنفيذ</span><input id="date" type="date" required></label><label><span>منفذ البرنامج</span><input id="teacher" type="text" required></label>
+<label class="full"><span>الهدف من البرنامج</span><textarea id="goals" rows="4" placeholder="اكتب كل هدف في سطر مستقل" required></textarea></label><label class="full"><span>الأثر الذي تركه البرنامج (النتائج المتوقعة)</span><textarea id="impact" rows="4" placeholder="اكتب كل نتيجة في سطر مستقل" required></textarea></label>
+<div class="full photos-upload-section"><div class="upload-title"><span>صور الشواهد</span><small>4 صور كحد أقصى</small></div><label class="upload-box" for="photos"><strong>＋ اختر الصور</strong><span>ستظهر معاينتها مباشرة هنا</span></label><input id="photos" type="file" accept="image/*" multiple hidden><p id="uploadMsg" class="upload-msg"></p><div id="photosBanner" class="photos-banner empty"><div class="photos-banner-head"><strong>معاينة الصور المختارة</strong><span id="photosCount">لم يتم اختيار صور</span></div><div id="thumbs" class="thumbs"></div><div class="empty-photos">ستظهر الصور هنا فور اختيارها</div></div></div></div><div class="form-actions"><button id="createBtn" class="primary" type="submit">إنشاء الشاهد</button><button class="secondary" type="reset">مسح</button></div></form></section>
+<section id="previewWrap" class="preview-wrap hidden"><div id="prepareStatus" class="share-panel no-print"><strong>جاري تجهيز ملف PDF والرابط...</strong></div><div id="readyActions" class="preview-actions no-print hidden"><button id="editBtn" class="secondary">العودة للتعديل</button><button id="imageBtn" class="secondary">تحميل صورة</button><button id="printBtn" class="secondary">طباعة</button><button id="shareBtn" class="primary">مشاركة PDF</button><button id="copyLinkBtn" class="secondary">نسخ الرابط</button></div><div id="sharePanel" class="share-panel no-print hidden"><strong>تم تجهيز الشاهد</strong><input id="pdfLink" readonly dir="ltr"></div>
+<div id="reportStage" class="report-stage"><article id="report" class="report">
+<header class="official-header"><div class="vision">VISION<br><b>2030</b><small>رؤية السعودية 2030</small></div><div class="office">الإدارة العامة للتعليم بمنطقة الرياض<br>إدارة تنمية القدرات - قسم ذوي الإعاقة</div><img class="moe-logo" src="moe-logo-clean.png" alt="وزارة التعليم"></header>
+<div class="report-title">تقرير البرامج المنفذة</div>
+<section class="program-summary"><div class="summary-side right"><h3>اسم البرنامج</h3><strong id="rProgram"></strong><h3 class="gold">نوع البرنامج</h3><strong id="rType"></strong></div><div class="program-wheel"><div class="wheel-ring"><span>▣</span><span>◎</span><span>♙</span><span>▤</span><span>▦</span><b>البرامج<br>المنفذة</b></div><h3>تاريخ التنفيذ</h3><strong id="rDate"></strong></div><div class="summary-side left"><h3>الجهة المنفذة</h3><strong id="rEntity"></strong><h3 class="gold">المستهدفون</h3><strong id="rTarget"></strong></div></section>
+<section class="info-box"><div class="box-title">الهدف من البرنامج</div><div id="rGoals" class="bullet-grid"></div></section>
+<section class="info-box"><div class="box-title impact-title">الأثر الذي تركه البرنامج (النتائج المتوقعة)</div><div id="rImpact" class="bullet-grid"></div></section>
+<section class="info-box executor"><div class="box-title">منفذ البرنامج</div><strong id="rTeacher"></strong></section>
+<section class="photos-box"><div id="rPhotos" class="photos-grid"></div></section><footer></footer>
+</article></div></section></main><script src="script.js?v=20260916-1"></script></body></html>
