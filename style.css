@@ -5,3 +5,7 @@
 /* More capacity for goals/impact while preserving template geometry. */
 .goals,.impact{font-size:10px;line-height:1.05;column-gap:38px;padding-left:8px;padding-right:8px}
 .goals .bullet-item,.impact .bullet-item{padding-right:12px;padding-left:1px;align-items:flex-start;white-space:normal;overflow-wrap:anywhere;line-height:1.05}
+
+/* Goals: deliberately smaller to prevent clipping with long Arabic text. */
+.goals{font-size:8px!important;line-height:1!important;column-gap:24px;padding-left:5px;padding-right:5px}
+.goals .bullet-item{padding-right:7px;padding-left:0;line-height:1!important;align-items:flex-start}
